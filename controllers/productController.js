@@ -131,20 +131,22 @@ exports.deleteReview = BigPromise(async (req, res, next) => {
   const remainingReviews = product.reviews.filter(
     (item) => item.user.toString() !== req.user._id.toString()
   );
-  
+
   const numberOfReviews = remainingReviews.length;
-  
-  if(numberOfReviews===0){
+
+  if (numberOfReviews === 0) {
     ratings = 0;
-  }else{
-    ratings = remainingReviews.reduce((acc, item) => item.rating + acc, 0) / numberOfReviews;
+  } else {
+    ratings =
+      remainingReviews.reduce((acc, item) => item.rating + acc, 0) /
+      numberOfReviews;
   }
-  
+
   //update the product
   await Product.findByIdAndUpdate(
     productId,
     {
-      reviews:remainingReviews,
+      reviews: remainingReviews,
       ratings,
       numberOfReviews,
     },
@@ -154,7 +156,7 @@ exports.deleteReview = BigPromise(async (req, res, next) => {
       useFindAndModify: false,
     }
   );
-  
+
   res.status(200).json({
     success: true,
   });
@@ -185,7 +187,6 @@ exports.adminUpdateOneProduct = BigPromise(async (req, res, next) => {
   if (!product) {
     return next(new CustomError("No product found with this id", 401));
   }
-  
 
   if (req.files) {
     let imagesArray = [];
@@ -212,8 +213,6 @@ exports.adminUpdateOneProduct = BigPromise(async (req, res, next) => {
     }
     req.body.photos = imagesArray;
   }
-
-  
 
   product = await Product.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
